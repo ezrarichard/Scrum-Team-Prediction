@@ -7,10 +7,12 @@ st.title('Scrum Team Story Points & Completion Prediction')
 # Template download
 st.markdown("## Download Input Template")
 template_data = pd.DataFrame({
-    'Team': [8], 
+    'Sprint No.': [10], 
+    'Team': [8],
     'Leave': [0], 
     'Working Days': [20], 
-    'Availability': [7.5]
+    'Availability': [7.5],
+    'Story Points': [44]
 })
 csv = template_data.to_csv(index=False)
 st.download_button(
