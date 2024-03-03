@@ -7,12 +7,12 @@ st.title('Scrum Team Story Points & Completion Prediction')
 # Template download
 st.markdown("## Download Input Template")
 template_data = pd.DataFrame({
-    'Sprint No.': [10], 
     'Team': [8],
     'Leave': [0], 
     'Working Days': [20], 
     'Availability': [7.5],
-    'Story Points': [44]
+    'Story Points': [44],  # Assuming users might want to see an example of what to input, including 'Story Points'
+    'Story Completed': [42]  # Adding an example column for 'Story Completed' for completeness
 })
 csv = template_data.to_csv(index=False)
 st.download_button(
@@ -32,6 +32,7 @@ if uploaded_file is not None:
     st.write(data)
 
     # Assuming the uploaded dataset includes the necessary columns: 'Team', 'Leave', 'Working Days', 'Availability'
+    # Note: This is a simplification. In practice, you might need to ensure that the uploaded data matches the expected format and columns.
     if st.button('Train Model and Predict on Uploaded Data'):
         # Train the model on the uploaded dataset
         model = train_and_evaluate_model(uploaded_file)
