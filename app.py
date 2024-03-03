@@ -40,7 +40,7 @@ if uploaded_file is not None:
 
         # For demonstration, you might want to predict story points and story completion for all rows or a specific row in the uploaded dataset
         # This example assumes prediction for the first row; you could loop through all rows for a comprehensive prediction
-        sample_data = data.iloc[0]
+        sample_data = data.iloc[1]
         team, leave, working_days, availability = sample_data['Team'], sample_data['Leave'], sample_data['Working Days'], sample_data['Availability']
 
         story_points, story_completed = predict_story_points(model, team, leave, working_days, availability)
