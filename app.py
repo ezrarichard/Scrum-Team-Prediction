@@ -24,38 +24,30 @@ st.download_button(
 )
 
 # File uploader
-uploaded_file = st.file_uploader("Upload your input CSV file", type=["csv"])
+uploaded_file = st.file_uploader("Upload your input CSV file for training", type=["csv"])
 
 if uploaded_file is not None:
-    # Read and display the uploaded dataset
+    # Read the uploaded dataset
     data = pd.read_csv(uploaded_file)
-    st.write("Uploaded Dataset:")
-    st.write(data)
+    st.write("Uploaded Dataset Preview:")
+    st.dataframe(data.head())  # Show a preview of the uploaded dataset
 
-    # Assuming the uploaded dataset includes the necessary columns
-    if st.button('Train Model and Predict on Uploaded Data'):
+    if st.button('Train Model with Uploaded Data'):
         # Train the model on the uploaded dataset
         model = train_and_evaluate_model(data)
+        st.success('Model trained successfully on the uploaded data. Now, provide details for prediction.')
 
-        # Demonstration assumes prediction for the first row; adjust as needed for your application
-        sample_data = data.iloc[0]
-        team, leave, working_days, availability = sample_data['Team'], sample_data['Leave'], sample_data['Working Days'], sample_data['Availability']
+        # Now ask for user inputs for prediction
+        st.header('Enter Details for Prediction:')
+        sprint_date = st.date_input('Sprint Date')  # Collects a date
+        team = st.number_input('Team Size', min_value=1, max_value=20)  # Assuming team size ranges from 1 to 20
+        leave = st.number_input('Leave', min_value=0)
+        working_days = st.number_input('Working Days', min_value=1)
+        availability = st.number_input('Availability', min_value=0.0, max_value=10.0, step=0.5)
 
-        story_points, story_completed = predict_story_points(model, team, leave, working_days, availability)
-        st.success(f'Predicted Story Points: {story_points}, Predicted Story Completion: {story_completed}')
+        if st.button('Predict Story Points and Completion'):
+            # Predict using the inputs
+            story_points, story_completed = predict_story_points(model, team, leave, working_days, availability)
+            st.success(f'Predicted for Sprint Date {sprint_date}: Story Points: {story_points}, Story Completion: {story_completed}')
 else:
-    # Fallback or default data input manually
-    st.header('Enter Sprint Details Manually:')
-    sprint_date = st.date_input('Sprint Date')  # Collects a date
-    team = st.number_input('Team Size', min_value=1, max_value=20)  # Assuming team size ranges from 1 to 20
-    leave = st.number_input('Leave', min_value=0)
-    working_days = st.number_input('Working Days', min_value=1)
-    availability = st.number_input('Availability', min_value=0.0, max_value=10.0, step=0.5)
-
-    if st.button('Predict Story Points and Completion for Manual Data'):
-        # Load and train the model on default dataset
-        model = train_and_evaluate_model()
-
-        # Predict using manually entered data. Note: 'sprint_date' is collected for record but not used in prediction
-        story_points, story_completed = predict_story_points(model, team, leave, working_days, availability)
-        st.success(f'Predicted for Sprint Date {sprint_date}: Story Points: {story_points}, Story Completion: {story_completed}')
+    st.write("Please upload a CSV file to proceed.")
