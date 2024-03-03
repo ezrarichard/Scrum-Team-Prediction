@@ -23,11 +23,13 @@ st.download_button(
     mime='text/csv',
 )
 
-# File uploader
+# Initialize session state variables if they don't exist
+if 'model_trained' not in st.session_state:
+    st.session_state.model_trained = False
+
 uploaded_file = st.file_uploader("Upload your input CSV file for training", type=["csv"])
 
-if uploaded_file is not None:
-    # Read the uploaded dataset
+if uploaded_file is not None and not st.session_state.model_trained:
     data = pd.read_csv(uploaded_file)
     st.write("Uploaded Dataset Preview:")
     st.dataframe(data.head())  # Show a preview of the uploaded dataset
@@ -35,19 +37,22 @@ if uploaded_file is not None:
     if st.button('Train Model with Uploaded Data'):
         # Train the model on the uploaded dataset
         model = train_and_evaluate_model(data)
+        st.session_state.model = model  # Store the model in session state
+        st.session_state.model_trained = True  # Update the flag
         st.success('Model trained successfully on the uploaded data. Now, provide details for prediction.')
 
-        # Now ask for user inputs for prediction
-        st.header('Enter Details for Prediction:')
-        sprint_date = st.date_input('Sprint Date')  # Collects a date
-        team = st.number_input('Team Size', min_value=1, max_value=20)  # Assuming team size ranges from 1 to 20
-        leave = st.number_input('Leave', min_value=0)
-        working_days = st.number_input('Working Days', min_value=1)
-        availability = st.number_input('Availability', min_value=0.0, max_value=10.0, step=0.5)
+if st.session_state.model_trained:
+    # Now ask for user inputs for prediction
+    st.header('Enter Details for Prediction:')
+    sprint_date = st.date_input('Sprint Date')  # Collects a date
+    team = st.number_input('Team Size', min_value=1, max_value=20)  # Assuming team size ranges from 1 to 20
+    leave = st.number_input('Leave', min_value=0)
+    working_days = st.number_input('Working Days', min_value=1)
+    availability = st.number_input('Availability', min_value=0.0, max_value=10.0, step=0.5)
 
-        if st.button('Predict Story Points and Completion'):
-            # Predict using the inputs
-            story_points, story_completed = predict_story_points(model, team, leave, working_days, availability)
-            st.success(f'Predicted for Sprint Date {sprint_date}: Story Points: {story_points}, Story Completion: {story_completed}')
-else:
-    st.write("Please upload a CSV file to proceed.")
+    predict_button = st.button('Predict Story Points and Completion')
+    
+    if predict_button:
+        # Predict using the inputs
+        story_points, story_completed = predict_story_points(st.session_state.model, team, leave, working_days, availability)
+        st.success(f'Predicted for Sprint Date {sprint_date}: Story Points: {story_points}, Story Completion: {story_completed}')
