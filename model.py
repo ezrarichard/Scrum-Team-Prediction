@@ -7,31 +7,31 @@ import numpy as np
 def train_and_evaluate_model(data_path='ScrumML.csv'):
     # Load and prepare the dataset
     data = pd.read_csv(data_path)
-    data['Sprint Date'] = pd.to_datetime(data['Sprint Date'])
-    data['Days Since First Sprint'] = (data['Sprint Date'] - data['Sprint Date'].min()).dt.days
 
-    # Select features and target
-    features = ['Days Since First Sprint', 'Leave', 'Working Days', 'Availability']
+    # Select features and target for the model
+    features = ['Team', 'Leave', 'Working Days', 'Availability']
     targets = ['Story Points', 'Story Completed']
 
-    # Split the dataset
+    # Split the dataset into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(data[features], data[targets], test_size=0.2, random_state=42)
 
-    # Train the model
+    # Train the linear regression model
     model = LinearRegression()
     model.fit(X_train, y_train)
 
-    # Evaluate the model
+    # Predict on the testing set and evaluate the model
     predictions = model.predict(X_test)
     mse = mean_squared_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
 
-   # print(f'Model Evaluation\nMean Squared Error: {mse:.2f}\nR^2 Score: {r2:.2f}')
+    # Uncomment the following line if you wish to print the model evaluation metrics
+    # print(f'Model Evaluation\nMean Squared Error: {mse:.2f}\nR^2 Score: {r2:.2f}')
 
     return model
 
-def predict_story_points(model, days_since_first_sprint, leave, working_days, availability):
-    features = np.array([[days_since_first_sprint, leave, working_days, availability]])
+def predict_story_points(model, team, leave, working_days, availability):
+    
+    features = np.array([[team, leave, working_days, availability]])
     prediction = model.predict(features)
     story_points, story_completed = prediction[0]
     return round(story_points), round(story_completed)
