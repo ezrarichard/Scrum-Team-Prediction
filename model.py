@@ -4,11 +4,21 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
-def train_and_evaluate_model(data_path='ScrumML.csv'):
-    # Load and prepare the dataset
-    data = pd.read_csv(data_path)
+def train_and_evaluate_model(data):
+    """
+    Trains and evaluates a linear regression model based on the provided DataFrame.
 
-    # Select features and target for the model
+    Parameters:
+    - data (DataFrame): The dataset to train the model on, expected to have specific columns.
+
+    Returns:
+    - model (LinearRegression): The trained linear regression model.
+    """
+    # Ensure the data is a DataFrame, useful when the function is called with a file path or a DataFrame
+    if isinstance(data, str):
+        data = pd.read_csv(data)
+
+    # Select features and targets for the model
     features = ['Team', 'Leave', 'Working Days', 'Availability']
     targets = ['Story Points', 'Story Completed']
 
@@ -24,13 +34,25 @@ def train_and_evaluate_model(data_path='ScrumML.csv'):
     mse = mean_squared_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
 
-    # Uncomment the following line if you wish to print the model evaluation metrics
+    # Optional: Print the model evaluation metrics
     # print(f'Model Evaluation\nMean Squared Error: {mse:.2f}\nR^2 Score: {r2:.2f}')
 
     return model
 
 def predict_story_points(model, team, leave, working_days, availability):
-    
+    """
+    Predicts story points and story completion based on the provided sprint details.
+
+    Parameters:
+    - model (LinearRegression): The trained model.
+    - team (int): The team size.
+    - leave (int): The number of leaves.
+    - working_days (int): The number of working days.
+    - availability (float): The availability score.
+
+    Returns:
+    - tuple: Predicted story points and story completion, both rounded to the nearest integer.
+    """
     features = np.array([[team, leave, working_days, availability]])
     prediction = model.predict(features)
     story_points, story_completed = prediction[0]
