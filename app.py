@@ -5,7 +5,7 @@ from model import train_and_evaluate_model, predict_story_points
 st.title('Scrum Team Story Points & Completion Prediction')
 
 # Template download
-st.markdown("## Download Input Template")
+st.markdown("### Download Input Template")
 template_data = pd.DataFrame({
     'Sprint Date': ['2022-01-01'],  # Example date format
     'Team': [8],
