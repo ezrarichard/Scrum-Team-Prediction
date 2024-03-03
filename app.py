@@ -4,7 +4,23 @@ from model import train_and_evaluate_model, predict_story_points
 
 st.title('Scrum Team Story Points & Completion Prediction')
 
-# Option for the user to upload their dataset
+# Template download
+st.markdown("## Download Input Template")
+template_data = pd.DataFrame({
+    'Team': [8], 
+    'Leave': [0], 
+    'Working Days': [20], 
+    'Availability': [7.5]
+})
+csv = template_data.to_csv(index=False)
+st.download_button(
+    label="Download CSV Template",
+    data=csv,
+    file_name='scrum_input_template.csv',
+    mime='text/csv',
+)
+
+# File uploader
 uploaded_file = st.file_uploader("Upload your input CSV file", type=["csv"])
 
 if uploaded_file is not None:
