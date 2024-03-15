@@ -36,8 +36,9 @@ if uploaded_file is not None and not st.session_state.model_trained:
 
     if st.button('Train Model with Uploaded Data'):
         # Train the model on the uploaded dataset
-        model = train_and_evaluate_model(data)
+        model, scaler = train_and_evaluate_model(data)  # Adjusted to receive scaler
         st.session_state.model = model  # Store the model in session state
+        st.session_state.scaler = scaler  # Store the scaler in session state
         st.session_state.model_trained = True  # Update the flag
         st.success('Model trained successfully on the uploaded data. Now, provide details for prediction.')
 
@@ -53,6 +54,6 @@ if st.session_state.model_trained:
     predict_button = st.button('Predict Story Points and Completion')
     
     if predict_button:
-        # Predict using the inputs
-        story_points, story_completed = predict_story_points(st.session_state.model, team, leave, working_days, availability)
+        # Predict using the inputs, now also passing the scaler
+        story_points, story_completed = predict_story_points(st.session_state.model, st.session_state.scaler, team, leave, working_days, availability)
         st.success(f'Predicted for Sprint Date {sprint_date}: Story Points: {story_points}, Story Completion: {story_completed}')
